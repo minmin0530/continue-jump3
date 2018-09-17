@@ -35,6 +35,7 @@ document.addEventListener("keyup", function(e) {
 const ai6 = new AI6GL();
 const CUBE_NUM = 64;
 const CUBE_NUM_3 = 8;
+let cursorNum = 1;
 const cursor = new Cube(1.0, 0.0, 0.0, 1.0, 5.0);
 cursor.setPosition(0.0, 0.0, 0.0);
 ai6.addObject(cursor);
@@ -77,7 +78,12 @@ const socket = io();
 socket.on('connect', () => {
   socket.on('initStage', (data) => {
     for (const pos of data) {
-      stageArray.push(new Cube(1.0, 0.0, 0.0, 1.0, 5.0) );
+      if      (pos.num == 1) {stageArray.push(new Cube(1.0, 0.0, 0.0, 1.0, 5.0) );}
+      else if (pos.num == 2) {stageArray.push(new Cube(0.0, 1.0, 0.0, 1.0, 5.0) );}
+      else if (pos.num == 3) {stageArray.push(new Cube(0.0, 0.0, 1.0, 1.0, 5.0) );}
+      else if (pos.num == 4) {stageArray.push(new Cube(1.0, 1.0, 0.0, 1.0, 5.0) );}
+
+//      stageArray.push(new Cube(1.0, 0.0, 0.0, 1.0, 5.0) );
       stageArray[stageArray.length - 1].setPosition(pos.x, pos.y, pos.z);
       ai6.addObject(stageArray[stageArray.length - 1]);
 
@@ -103,17 +109,34 @@ function mainLoop() {
   
   if (keyArray[6]) {
     keyArray[6] = false;
-    stageArray.push(new Cube(1.0, 0.0, 0.0, 1.0, 5.0) );
+    if      (cursorNum == 1) {stageArray.push(new Cube(1.0, 0.0, 0.0, 1.0, 5.0) );}
+    else if (cursorNum == 2) {stageArray.push(new Cube(0.0, 1.0, 0.0, 1.0, 5.0) );}
+    else if (cursorNum == 3) {stageArray.push(new Cube(0.0, 0.0, 1.0, 1.0, 5.0) );}
+    else if (cursorNum == 4) {stageArray.push(new Cube(1.0, 1.0, 0.0, 1.0, 5.0) );}
+    else if (cursorNum == 0) {stageArray.push(new Cube(0.0, 0.0, 0.0, 1.0, 5.0) );}
+//    stageArray.push(new Cube(1.0, 0.0, 0.0, 1.0, 5.0) );
     stageArray[stageArray.length - 1].setPosition(cursor.x, cursor.y, cursor.z);
     ai6.addObject(stageArray[stageArray.length - 1]);
     let putData = {
-      x:cursor.x,
-      y:cursor.y,
-      z:cursor.z,
-      num:1
+      x: cursor.x,
+      y: cursor.y,
+      z: cursor.z,
+      num: cursorNum
     };
-    socket.emit('putData', putData);
-  
+    socket.emit('putData', putData);  
+  }
+
+  if (keyArray[7]) {
+    keyArray[7] = false;
+    cursorNum += 1;
+    if (cursorNum >= 5) {
+      cursorNum = 0;
+    }
+    if      (cursorNum == 1) {cursor.r = 1.0; cursor.g = 0.0; cursor.b = 0.0;}
+    else if (cursorNum == 2) {cursor.r = 0.0; cursor.g = 1.0; cursor.b = 0.0;}
+    else if (cursorNum == 3) {cursor.r = 0.0; cursor.g = 0.0; cursor.b = 1.0;}
+    else if (cursorNum == 4) {cursor.r = 1.0; cursor.g = 1.0; cursor.b = 0.0;}
+    else if (cursorNum == 0) {cursor.r = 0.0; cursor.g = 0.0; cursor.b = 0.0;}
   }
 
   this.time += 1;
