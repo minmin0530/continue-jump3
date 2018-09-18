@@ -22,7 +22,6 @@ io.sockets.on('connection', (socket) => {
   socket.on('putData', (data) => {
     stageArray.push(data);
     fs.writeFileSync('stage.json', JSON.stringify(stageArray));
-    console.log(data);
   });
 });
 
